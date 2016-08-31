@@ -18,13 +18,14 @@ Here is a proof of concept command that worked for me.  It does the following:
  - There two containers are peers.
  - There is still just one Docker daemon and one Docker image cache, on the host.
  - Not that bad!
- 
- ```
- docker run --rm \
-   -v "/usr/local/MATLAB/R2016a":/usr/local/MATLAB/from-host \
-   -v "/home/ben/Desktop/matlog":/var/log/matlab \
-   -v /var/run/docker.sock:/var/run/docker.sock \
-   --mac-address="68:f7:28:f6:68:a6" \
-   ninjaben/rtb-support -r "system('docker run --rm ninjaben/mitsuba-spectral mitsuba -h');exit;"
- ```
+
+
+```
+docker run --rm \
+  -v "/usr/local/MATLAB/R2016a":/usr/local/MATLAB/from-host \
+  -v "/home/ben/Desktop/matlog":/var/log/matlab \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  --mac-address="68:f7:28:f6:68:a6" \
+  ninjaben/rtb-support -r "system('docker run --rm ninjaben/mitsuba-spectral mitsuba -h');exit;"
+```
  
