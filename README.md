@@ -7,18 +7,24 @@ The image does not include Matlab itself, so this must be mounted in from the ho
 
 The image includes the Docker executable, which RenderToolbox3 can use to access renderers, etc.  The idea is that you mount in the port of the Docker daemon from the host.  That way this container can launch Docker containers that are "peers", based on images cached on the host.
 
+# Goals
 This is a work in progress.
 
-When launching containers from this image, we will have to mount in working folders from the host.  I haven't worked that out yet.
+Want to use Docker containers for two distinct purposes:
+ - as the unit of job scheduling with Kubernetes or similar
+ - as the way to make dependencies shippable, isolated
 
-Here is a proof of concept command that worked for me.  It does the following:
- - From the host, we launch an `rtb-support` container.
- - In the container, we launch Matlab.
- - In Matlab, we launch a `mitsuba-spectral` container.
- - There two containers are peers.
- - There is still just one Docker daemon and one Docker image cache, on the host.
- - Not that bad!
+Don't want these two purposes to interact.  The images that deal with shipping dependencies should not care that they are being used by a Docker-based scheduler.
 
+At first, this sounds like we want [Docker-in-Docker](https://blog.docker.com/2013/09/docker-can-now-run-within-docker/).  But according to the author, that turns out to be kinda messy and would require changes to the images.  I.e., it would require the two purposes of Docker to know about each other. 
+
+A better way may be to build Docker into one top-level image that we use for job scheduling, and to let contaners from that image share access the Docker daemon on the host.  The same author [explains this](https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/).  Then the two purposes for Docker can reemain independent.
+
+## Proof of Concept
+I tried this out with Matlab, in a way that resembles what we do with RenderToolbox3.  It does the following:
+ - From the host, launch an `rtb-support` container with mounted-in Matlab.
+ - In the container, launch Matlab.
+ - From Matlab, launch a `mitsuba-spectral` container with a "help" command.
 
 ```
 docker run --rm \
@@ -28,4 +34,7 @@ docker run --rm \
   --mac-address="68:f7:28:f6:68:a6" \
   ninjaben/rtb-support -r "system('docker run --rm ninjaben/mitsuba-spectral mitsuba -h');exit;"
 ```
+
+It goes!  The `rtb-support` container and `mitsuba-spectral` containers turn out to be peers, managed by the same Docker daemon on the host.  This is nice because the images are also sitting in the same cache on the host.
  
+Not that bad.
