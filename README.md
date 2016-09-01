@@ -20,7 +20,7 @@ At first, this sounds like we want [Docker-in-Docker](https://blog.docker.com/20
 
 A better way may be to build Docker into one top-level image that we use for job scheduling, and to let contaners from that image share access the Docker daemon on the host.  The same author [explains this](https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/).  Then the two purposes for Docker can reemain independent.
 
-## Proof of Concept
+# Proof of Concept
 I tried this out with Matlab, in a way that resembles what we do with RenderToolbox3.  It does the following:
  - From the host, launch an `rtb-support` container with mounted-in Matlab.
  - In the container, launch Matlab.
@@ -38,3 +38,10 @@ docker run --rm \
 It goes!  The `rtb-support` container and `mitsuba-spectral` containers turn out to be peers, managed by the same Docker daemon on the host.  This is nice because the images are also sitting in the same cache on the host.
  
 Not that bad.
+
+# Next
+Need to push this further:
+ - test with rendering jobs
+ - test with reading/writing data to/from S3
+ - test with Kubernetes Job scheduling
+ - test with Kubernetes dashboard and S3 web interface
