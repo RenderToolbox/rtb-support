@@ -39,3 +39,16 @@ RUN git clone https://github.com/assimp/assimp.git
 WORKDIR /assimp/assimp
 RUN cmake CMakeLists.txt -G 'Unix Makefiles' && make && make install && ldconfig
 
+# yas3fs
+RUN apt-get install -y \
+    fuse \
+    python-pip
+RUN pip install yas3fs
+RUN sed -i'' 's/^# *user_allow_other/user_allow_other/' /etc/fuse.conf
+RUN chmod a+r /etc/fuse.conf
+
+# job helper
+WORKDIR /rtb
+COPY rtb-job.sh /rtb/
+ENTRYPOINT ["/rtb/rtb-job.sh"]
+
