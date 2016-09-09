@@ -10,7 +10,7 @@
 # RTB_OUTPUT_SCRATCH, RTB_OUTPUT_BUCKET, RTB_OUTPUT_TOPIC like INPUT, above.
 #
 # RTB_STARTUP initialzation script to pass to run('...')
-# RTB_TOOLBOXES comma-separated list of toolboxes to pass to tbUse({'...'}),
+# RTB_TOOLBOXES arguments to pass to tbUse(...), like toolbox 'name' or cellstr of names,
 # RTB_COMMAND command string to pass to matlab -r "..."
 #
 # 2016 benjamin.heasly@gmail.com
