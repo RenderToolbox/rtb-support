@@ -50,7 +50,7 @@ set_up_scratch $OUTPUT_SCRATCH $RTB_OUTPUT_BUCKET $RTB_OUTPUT_TOPIC
 
 # build command and call matlab
 MATLAB_LOG="$OUTPUT_SCRATCH"/matlab.log
-MATLAB_COMMAND="try; run('$RTB_STARTUP'); tbUse({'$RTB_TOOLBOXES'}); $COMMAND; catch err; disp(err); end; exit();"
+MATLAB_COMMAND="try; run('$RTB_STARTUP'); tbUse($RTB_TOOLBOXES); $COMMAND; catch err; disp(err); end; exit();"
 
 echo "Call matlab with command <$MATLAB_COMMAND> log to <$MATLAB_LOG>"
 
