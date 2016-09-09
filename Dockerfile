@@ -37,6 +37,7 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /assimp
 RUN git clone https://github.com/assimp/assimp.git
 WORKDIR /assimp/assimp
+RUN git checkout v3.3.1
 RUN cmake CMakeLists.txt -G 'Unix Makefiles' && make && make install && ldconfig
 
 # yas3fs
