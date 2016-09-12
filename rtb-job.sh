@@ -3,23 +3,30 @@
 #
 # Environtment variables for support:
 #
-# RTB_INPUT_SCRATCH Input scratch folder to create,
-# RTB_INPUT_BUCKET S3 bucket to mout at input scratch folder,
-# RTB_INPUT_TOPIC ARN of Amazon SNS Topic to use if S3 buket is to be shared.
+# INPUT_SCRATCH Input scratch folder to create,
+# INPUT_BUCKET S3 bucket to mout at input scratch folder,
+# INPUT_TOPIC ARN of Amazon SNS Topic to use if S3 buket is to be shared.
 #
-# RTB_OUTPUT_SCRATCH, RTB_OUTPUT_BUCKET, RTB_OUTPUT_TOPIC like INPUT, above.
+# OUTPUT_SCRATCH, OUTPUT_BUCKET, OUTPUT_TOPIC like INPUT, above.
 #
-# RTB_STARTUP initialzation script to pass to run('...')
-# RTB_TOOLBOXES arguments to pass to tbUse(...), like toolbox 'name' or cellstr of names,
-# RTB_COMMAND command string to pass to matlab -r "..."
+# STARTUP initialzation script to pass to run('...')
+# TOOLBOXES comma-separated list of toolboxes to pass to tbUse({'...'}),
+# COMMAND command string to pass to matlab -r "..."
 #
 # 2016 benjamin.heasly@gmail.com
 
 
-# params and defaults
-INPUT_SCRATCH=${RTB_INPUT_SCRATCH:-./rtb-input-scratch}
-OUTPUT_SCRATCH=${RTB_OUTPUT_SCRATCH:-./rtb-output-scratch}
-COMMAND=${RTB_COMMAND:-ver}
+# given or default environment
+: ${INPUT_SCRATCH:="./rtb-input-scratch"}
+: ${INPUT_BUCKET:=""}
+: ${INPUT_TOPIC:=""}
+: ${OUTPUT_SCRATCH:="./rtb-output-scratch"}
+: ${OUTPUT_BUCKET:=""}
+: ${OUTPUT_TOPIC:=""}
+: ${STARTUP:=""}
+: ${TOOLBOXES:=""} 
+: ${COMMAND:="ver"}
+
 
 # set up scratch dirs and buckets
 function set_up_scratch ()
@@ -44,15 +51,16 @@ function set_up_scratch ()
   fi
 }
 
-set_up_scratch $INPUT_SCRATCH $RTB_INPUT_BUCKET $RTB_INPUT_TOPIC
-set_up_scratch $OUTPUT_SCRATCH $RTB_OUTPUT_BUCKET $RTB_OUTPUT_TOPIC
+set_up_scratch $INPUT_SCRATCH $INPUT_BUCKET INPUT_TOPIC
+set_up_scratch $OUTPUT_SCRATCH OUTPUT_BUCKET OUTPUT_TOPIC
 
 
 # build command and call matlab
 MATLAB_LOG="$OUTPUT_SCRATCH"/matlab.log
-MATLAB_COMMAND="try; run('$RTB_STARTUP'); tbUse($RTB_TOOLBOXES); $COMMAND; catch err; disp(err); end; exit();"
+MATLAB_COMMAND="try; run('STARTUP'); tbUse($TOOLBOXES); $COMMAND; catch err; disp(err); end; exit();"
 
 echo "Call matlab with command <$MATLAB_COMMAND> log to <$MATLAB_LOG>"
+
 
 # load up-to-date libstdc++, not older version shipped with Matlab
 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libstdc++.so.6 matlab -nodisplay -logfile "$MATLAB_LOG" -r "$MATLAB_COMMAND"
@@ -71,6 +79,6 @@ function clean_up_scratch ()
   fi
 }
 
-clean_up_scratch $INPUT_SCRATCH $RTB_INPUT_BUCKET
-clean_up_scratch $OUTPUT_SCRATCH $RTB_OUTPUT_BUCKET
+clean_up_scratch $INPUT_SCRATCH INPUT_BUCKET
+clean_up_scratch $OUTPUT_SCRATCH OUTPUT_BUCKET
 
