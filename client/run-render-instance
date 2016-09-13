@@ -6,7 +6,7 @@ echo "Hello."
 : ${INSTANCE_NAME:="test-instance"}
 : ${COMMAND:="ls -al"}
 : ${AMI_ID:="ami-25835145"}
-: ${DISK_GB:="100"}
+: ${DISK_GB:=100}
 : ${INSTANCE_TYPE:="m4.large"}
 : ${IAM_PROFILE:="Name=ecsInstanceRole"}
 : ${SECURITY_GROUPS:="default" "all-ssh"}
@@ -15,13 +15,12 @@ echo "Hello."
 
 INSTANCE_DETAILS="/tmp/$INSTANCE_NAME.json"
 
-
 # spin up a new instances
 echo "Requesting <$INSTANCE_TYPE> for <$AMI_ID>."
 aws ec2 run-instances \
   --image-id $AMI_ID \
   --count 1 \
-  --block-device-mapping /dev/sda1=:$DISK_GB:true
+  --block-device-mappings "[{\"DeviceName\":\"/dev/sda1\",\"Ebs\":{\"VolumeSize\":$DISK_GB,\"DeleteOnTermination\":true,\"VolumeType\":\"gp2\"}}]" \
   --instance-type $INSTANCE_TYPE \
   --iam-instance-profile $IAM_PROFILE \
   --security-groups $SECURITY_GROUPS \
