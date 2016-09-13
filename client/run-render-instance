@@ -6,12 +6,14 @@ echo "Hello."
 : ${INSTANCE_NAME:="test-instance"}
 : ${COMMAND:="ls -al"}
 : ${AMI_ID:="ami-25835145"}
+: ${DISK_GB:="100"}
 : ${INSTANCE_TYPE:="m4.large"}
 : ${IAM_PROFILE:="Name=ecsInstanceRole"}
 : ${SECURITY_GROUPS:="default" "all-ssh"}
 : ${KEY_NAME:="bsh-imac-workstation"}
+: ${KEY_FOLDER:="$HOME/aws"}
 
-INSTANCE_DETAILS="$INSTANCE_NAME.json"
+INSTANCE_DETAILS="/tmp/$INSTANCE_NAME.json"
 
 
 # spin up a new instances
@@ -19,6 +21,7 @@ echo "Requesting <$INSTANCE_TYPE> for <$AMI_ID>."
 aws ec2 run-instances \
   --image-id $AMI_ID \
   --count 1 \
+  --block-device-mapping /dev/sda1=:$DISK_GB:true
   --instance-type $INSTANCE_TYPE \
   --iam-instance-profile $IAM_PROFILE \
   --security-groups $SECURITY_GROUPS \
@@ -51,7 +54,7 @@ ssh-keyscan -H $INSTANCE_DNS_NAME >> ~/.ssh/known_hosts
 
 # fire off the command
 echo "Running command <$COMMAND> at host <$INSTANCE_DNS_NAME>"
-ssh -i "$KEY_NAME.pem" "ubuntu@$INSTANCE_DNS_NAME" "$COMMAND"
+ssh -i "$KEY_FOLDER/$KEY_NAME.pem" "ubuntu@$INSTANCE_DNS_NAME" "$COMMAND"
 
 
 # shut down the instance

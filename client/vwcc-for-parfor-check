@@ -1,0 +1,34 @@
+#! /bin/bash
+
+export INSTANCE_NAME="vwcc-parfor-check" 
+export INSTANCE_TYPE="m4.2xlarge"
+export COMMAND="docker run \
+  --rm \
+  -v \"/usr/local/MATLAB/R2015b\":/usr/local/MATLAB/from-host \
+  -v /home/ubuntu:/home/ubuntu \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  --net=\"host\" \
+  -e \"STARTUP=/home/ubuntu/MATLAB/startup\" \
+  -e \"TOOLBOXES={'VirtualWorldColorConstancy', 'isetbio'}\" \
+  -e \"COMMAND=RunToyVirtualWorldRecipes('luminanceLevels', [.2 .2119], 'reflectanceNumbers', 1:5, 'executeWidth', 640, 'executeHeight', 480, 'analyzeWidth', 640, 'analyzeHeight', 480)\" \
+  -e \"OUTPUT_SCRATCH=/home/ubuntu/render-toolbox-working\" \
+  -e \"OUTPUT_BUCKET=s3://render-toolbox-test/vwcc-parfor-check\" \
+  ninjaben/rtb-support"
+./run-render-instance 2>&1 > /tmp/vwcc-parfor-check.log &
+
+export INSTANCE_NAME="vwcc-for-check" 
+export INSTANCE_TYPE="m4.2xlarge"
+export COMMAND="docker run \
+  --rm \
+  -v \"/usr/local/MATLAB/R2015b\":/usr/local/MATLAB/from-host \
+  -v /home/ubuntu:/home/ubuntu \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  --net=\"host\" \
+  -e \"STARTUP=/home/ubuntu/MATLAB/startup\" \
+  -e \"TOOLBOXES={'VirtualWorldColorConstancy', 'isetbio'}\" \
+  -e \"COMMAND=RunToyVirtualWorldRecipesFor('luminanceLevels', [.2 .2119], 'reflectanceNumbers', 1:5, 'executeWidth', 640, 'executeHeight', 480, 'analyzeWidth', 640, 'analyzeHeight', 480)\" \
+  -e \"OUTPUT_SCRATCH=/home/ubuntu/render-toolbox-working\" \
+  -e \"OUTPUT_BUCKET=s3://render-toolbox-test/vwcc-for-check\" \
+  ninjaben/rtb-support"
+./run-render-instance 2>&1 > /tmp/vwcc-for-check.log &
+
