@@ -1,0 +1,20 @@
+#! /bin/bash
+
+export COMMAND="docker pull ninjaben/rtb-support && docker run \
+  --rm \
+  -v \"/usr/local/MATLAB/R2015b\":/usr/local/MATLAB/from-host \
+  -v /home/ubuntu:/home/ubuntu \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  --net=\"host\" \
+  -e \"STARTUP=/home/ubuntu/MATLAB/startup\" \
+  -e \"TOOLBOXES={'RenderToolbox3', 'isetbio'}\" \
+  -e \"COMMAND=rtbTestInstallation()\" \
+  -e \"OUTPUT_SCRATCH=/home/ubuntu/render-toolbox-working\" \
+  -e \"OUTPUT_BUCKET=s3://render-toolbox-test\" \
+  ninjaben/rtb-support"
+
+export INSTANCE_NAME="rtbTestInstallation" 
+export INSTANCE_TYPE="m4.large"
+
+./run-render-instance 2>&1 | tee rtb-support-test.log
+

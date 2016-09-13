@@ -1,0 +1,66 @@
+#! /bin/bash
+
+echo "Hello."
+
+# given or default environment
+: ${INSTANCE_NAME:="test-instance"}
+: ${COMMAND:="ls -al"}
+: ${AMI_ID:="ami-25835145"}
+: ${INSTANCE_TYPE:="m4.large"}
+: ${IAM_PROFILE:="Name=ecsInstanceRole"}
+: ${SECURITY_GROUPS:="default" "all-ssh"}
+: ${KEY_NAME:="bsh-imac-workstation"}
+
+INSTANCE_DETAILS="$INSTANCE_NAME.json"
+
+
+# spin up a new instances
+echo "Requesting <$INSTANCE_TYPE> for <$AMI_ID>."
+aws ec2 run-instances \
+  --image-id $AMI_ID \
+  --count 1 \
+  --instance-type $INSTANCE_TYPE \
+  --iam-instance-profile $IAM_PROFILE \
+  --security-groups $SECURITY_GROUPS \
+  --key-name $KEY_NAME \
+  > "$INSTANCE_DETAILS"
+
+INSTANCE_ID=`jq -r ".Instances[0].InstanceId" $INSTANCE_DETAILS`
+
+
+# tag the instance for fun
+aws ec2 create-tags --resources $INSTANCE_ID --tags Key=Name,Value=$INSTANCE_NAME Key=Script,Value=run-render-instance
+
+
+# wait until it's ready for ssh
+echo "Waiting for instance <$INSTANCE_ID> to start..."
+aws ec2 wait instance-status-ok --instance-ids "$INSTANCE_ID"
+echo "...OK"
+
+
+# pre-accept ssh key for the instance
+aws ec2 describe-instances \
+  --instance-id $INSTANCE_ID \
+  > "$INSTANCE_DETAILS"
+
+INSTANCE_DNS_NAME=`jq -r ".Reservations[0].Instances[0].PublicDnsName" $INSTANCE_DETAILS`
+
+ssh-keygen -R $INSTANCE_DNS_NAME -f ~/.ssh/known_hosts
+ssh-keyscan -H $INSTANCE_DNS_NAME >> ~/.ssh/known_hosts
+
+
+# fire off the command
+echo "Running command <$COMMAND> at host <$INSTANCE_DNS_NAME>"
+ssh -i "$KEY_NAME.pem" "ubuntu@$INSTANCE_DNS_NAME" "$COMMAND"
+
+
+# shut down the instance
+echo "Terminating instance <$INSTANCE_ID>..."
+aws ec2 terminate-instances \
+  --instance-ids "$INSTANCE_ID" \
+  >> "$INSTANCE_DETAILS"
+aws ec2 wait instance-terminated --instance-ids "$INSTANCE_ID"
+echo "...OK"
+
+echo "Bye-bye."
+
