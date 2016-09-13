@@ -31,11 +31,12 @@ Here are some usage examples I'm working with:
 
 # Next
 This is more or less working, with some limitations:
- - Execution by bash script assumes one instance per command.
+ - Execution by bash script assumes one EC2 instance per job.
  - Execution by bash doesn't allow queueing or retrying of jobs.
+ - Job and instance lifecycle are managed by client (ie must leave workstation running).
  - Bash scripts and environment variables take a lot of syntax to invoke.
 
-A good next step would be to set up Kubernetes and a smart autoscaling policy.  Kubernetes config files could suck up a lot of the Bash syntax.
+A good next step would be to set up Kubernetes and a smart autoscaling policy.  Kubernetes config files could suck up a lot of the Bash syntax.  Kubernetes could do all the scheduling, management, retrying, etc.
 
 Here are some links to pursue:
  - [Kubernetes on AWS](http://kubernetes.io/docs/getting-started-guides/aws/)
