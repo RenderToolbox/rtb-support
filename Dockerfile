@@ -4,7 +4,6 @@
 #
 # This includes the ability to let Matlab launch Docker containers.  This works by building the Docker
 # executable into this image, and then mounting in the port to the Docker daemon running on the Docker host.
-#
 # Thaks to Jérôme Petazzoni for advice on this style of launching "peer" containers in Docker
 #   https://jpetazzo.github.io/2015/09/03/do-not-use-docker-in-docker-for-ci/
 #
@@ -18,15 +17,22 @@
 #   -e "COMMAND=system('docker run hello-world')" \
 #   ninjaben/rtb-support"
 #
-# The entrypoint is the included script rtb-job.sh.  This script can handle additoinal details that we need for
-# running Matlab jobs on AWS, including:
-#   - toolbox setup with the ToolboxToolbox tbUse
-#   - mounting an S3 bucket for input data
-#   - mounting an s3 bucket for output data
+# This also includes the ability to read and write data in AWS S3 buckets.  This works through the "aws s3 cp"
+# command.  The input and output scratch folders and S3 buckets can be specified with "-e".  Here's an example
+# that would copy all the input files to the output:
 #
-# To set these things up, the script reads configuration from environment variables.  These can be passed to the
-# Docker container with "-e".
-#
+# docker run \
+#   --rm \
+#   -v "/usr/local/MATLAB/R2016a":/usr/local/MATLAB/from-host \
+#   -v /var/run/docker.sock:/var/run/docker.sock \
+#   --net="host" \
+#   -e "INPUT_SCRATCH=/test/input-scratch" \
+#   -e "INPUT_BUCKET=s3://my-input-bucket" \
+#   -e "OUTPUT_SCRATCH=/test/output-scratch" \
+#   -e "OUTPUT_BUCKET=s3://my-output-bucket" \
+#   -e "COMMAND=system('cp -r /test/input-scratch/* /test/output-scratch/)" \
+#   ninjaben/rtb-support
+
 
 FROM ninjaben/matlab-support
 
@@ -48,13 +54,9 @@ WORKDIR /assimp/assimp
 RUN git checkout v3.3.1
 RUN cmake CMakeLists.txt -G 'Unix Makefiles' && make && make install && ldconfig
 
-# yas3fs
-RUN apt-get install -y \
-    fuse \
-    python-pip
-RUN pip install yas3fs
-RUN sed -i'' 's/^# *user_allow_other/user_allow_other/' /etc/fuse.conf
-RUN chmod a+r /etc/fuse.conf
+# awscli
+RUN apt-get install -y python-pip
+RUN pip install awscli
 
 # job helper
 WORKDIR /rtb
