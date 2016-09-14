@@ -1,6 +1,7 @@
 #! /bin/bash
 
 echo "Hello."
+date
 
 # given or default environment
 : ${INSTANCE_NAME:="test-instance"}
@@ -65,4 +66,5 @@ aws ec2 wait instance-terminated --instance-ids "$INSTANCE_ID"
 echo "...OK"
 
 echo "Bye-bye."
+date
 
