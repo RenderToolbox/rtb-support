@@ -6,7 +6,7 @@ date
 # given or default environment
 : ${INSTANCE_NAME:="test-instance"}
 : ${COMMAND:="ls -al"}
-: ${AMI_ID:="ami-25835145"}
+: ${AMI_ID:="ami-f935e799"}
 : ${DISK_GB:=100}
 : ${INSTANCE_TYPE:="m4.large"}
 : ${IAM_PROFILE:="Name=ecsInstanceRole"}
