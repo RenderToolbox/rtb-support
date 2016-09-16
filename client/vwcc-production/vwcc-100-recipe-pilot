@@ -10,9 +10,9 @@ export COMMAND="docker run \
   --net=\"host\" \
   -e \"STARTUP=/home/ubuntu/MATLAB/startup\" \
   -e \"TOOLBOXES={'VirtualWorldColorConstancy', 'isetbio'}\" \
-  -e \"COMMAND=RunToyVirtualWorldRecipes('luminanceLevels', [0.2 0.6], 'reflectanceNumbers', 1:2, 'executeWidth', 640, 'executeHeight', 480, 'analyzeWidth', 640, 'analyzeHeight', 480, 'analyzeCropImageHalfSize', 50, 'mosaicHalfSize', 50)\" \
+  -e \"COMMAND=RunToyVirtualWorldRecipes('luminanceLevels', [.2 .2119 .2245 .226 .2379 .2520 .2553 .267 .2829 .2884], 'reflectanceNumbers', 1:10, 'executeWidth', 640, 'executeHeight', 480, 'analyzeWidth', 640, 'analyzeHeight', 480, 'analyzeCropImageHalfSize', 50, 'mosaicHalfSize', 50)\" \
   -e \"OUTPUT_SCRATCH=/home/ubuntu/render-toolbox-working\" \
-  -e \"OUTPUT_BUCKET=s3://render-toolbox-test/vwcc-100-recipe-pilot\" \
+  -e \"OUTPUT_BUCKET=s3://render-toolbox-vwcc/100-recipe-pilot\" \
   ninjaben/rtb-support"
 ./run-render-instance 2>&1 > /tmp/vwcc-100-recipe-pilot.log &
 
