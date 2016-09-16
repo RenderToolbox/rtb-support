@@ -59,7 +59,7 @@ copy_data "$INPUT_BUCKET" "$INPUT_SCRATCH" "$INPUT_FLAGS"
 
 # build command and call matlab
 MATLAB_LOG="$OUTPUT_SCRATCH"/matlab.log
-MATLAB_COMMAND="try; run('$STARTUP'); if exist('tbUse', 'file'); tbUse($TOOLBOXES); end; $COMMAND; catch err; disp(err); end; exit();"
+MATLAB_COMMAND="try; run('$STARTUP'); if exist('tbUse', 'file'); tbUse($TOOLBOXES); end; $COMMAND; catch err; disp(err); end; save(fullfile('$OUTPUT_SCRATCH', sprintf('rtb-job-%s', datestr(now(), 30)))); exit();"
 
 
 # invoke Matlab with up-to-date libstdc++, not older version shipped with Matlab
