@@ -1,0 +1,17 @@
+#! /bin/bash
+
+export INSTANCE_NAME="matlab-error-check" 
+export INSTANCE_TYPE="m3.large"
+export COMMAND="docker run \
+  --rm \
+  -v \"/usr/local/MATLAB/R2015b\":/usr/local/MATLAB/from-host \
+  -v /home/ubuntu:/home/ubuntu \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  --net=\"host\" \
+  -e \"STARTUP=/home/ubuntu/MATLAB/startup\" \
+  -e \"COMMAND=error('test-error');\" \
+  -e \"OUTPUT_SCRATCH=/home/ubuntu/render-toolbox-working\" \
+  -e \"OUTPUT_BUCKET=s3://render-toolbox-test/matlab-error-check\" \
+  ninjaben/rtb-support"
+./run-render-instance 2>&1 > /tmp/matlab-error-check.log &
+

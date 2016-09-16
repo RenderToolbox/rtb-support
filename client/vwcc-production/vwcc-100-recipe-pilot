@@ -1,0 +1,18 @@
+#! /bin/bash
+
+export INSTANCE_NAME="vwcc-100-recipe-pilot" 
+export INSTANCE_TYPE="m4.2xlarge"
+export COMMAND="docker run \
+  --rm \
+  -v \"/usr/local/MATLAB/R2015b\":/usr/local/MATLAB/from-host \
+  -v /home/ubuntu:/home/ubuntu \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  --net=\"host\" \
+  -e \"STARTUP=/home/ubuntu/MATLAB/startup\" \
+  -e \"TOOLBOXES={'VirtualWorldColorConstancy', 'isetbio'}\" \
+  -e \"COMMAND=RunToyVirtualWorldRecipes('luminanceLevels', [0.2 0.6], 'reflectanceNumbers', 1:2, 'executeWidth', 640, 'executeHeight', 480, 'analyzeWidth', 640, 'analyzeHeight', 480, 'analyzeCropImageHalfSize', 50, 'mosaicHalfSize', 50)\" \
+  -e \"OUTPUT_SCRATCH=/home/ubuntu/render-toolbox-working\" \
+  -e \"OUTPUT_BUCKET=s3://render-toolbox-test/vwcc-100-recipe-pilot\" \
+  ninjaben/rtb-support"
+./run-render-instance 2>&1 > /tmp/vwcc-100-recipe-pilot.log &
+
