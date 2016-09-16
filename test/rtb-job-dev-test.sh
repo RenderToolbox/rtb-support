@@ -5,9 +5,9 @@
 # Have to set up some local env as fixture (sorry).
 
 HOST_MATLAB="/usr/local/MATLAB/R2016a"
-HOST_VOLUME="/home/ben/"
-HOST_STARTUP="/home/ben/Documents/MATLAB/startup"
-HOST_AWS_CONFIG="/home/ben/.aws/config"
+HOST_VOLUME="$HOME"
+HOST_STARTUP="$HOME/Documents/MATLAB/startup"
+HOST_AWS_CONFIG="$HOME/.aws/config"
 
 INPUT_BUCKET="s3://render-toolbox-test/input"
 OUTPUT_BUCKET="s3://render-toolbox-test/output"
