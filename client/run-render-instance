@@ -13,6 +13,8 @@ date
 : ${SECURITY_GROUPS:="default" "all-ssh"}
 : ${KEY_NAME:="bsh-imac-workstation"}
 : ${KEY_FOLDER:="$HOME/aws"}
+: ${TERMINATE:="yes"}
+
 
 INSTANCE_DETAILS="/tmp/$INSTANCE_NAME.json"
 
@@ -57,13 +59,18 @@ echo "Running command <$COMMAND> at host <$INSTANCE_DNS_NAME>"
 ssh -i "$KEY_FOLDER/$KEY_NAME.pem" "ubuntu@$INSTANCE_DNS_NAME" "$COMMAND"
 
 
-# shut down the instance
-echo "Terminating instance <$INSTANCE_ID>..."
-aws ec2 terminate-instances \
-  --instance-ids "$INSTANCE_ID" \
-  >> "$INSTANCE_DETAILS"
-aws ec2 wait instance-terminated --instance-ids "$INSTANCE_ID"
-echo "...OK"
+# shut down the instance?
+if [ "yes" == $TERMINATE ];
+then
+  echo "Terminating instance <$INSTANCE_ID>..."
+  aws ec2 terminate-instances \
+    --instance-ids "$INSTANCE_ID" \
+    >> "$INSTANCE_DETAILS"
+  aws ec2 wait instance-terminated --instance-ids "$INSTANCE_ID"
+  echo "...OK"
+else
+  echo "Leaving instance running <$INSTANCE_ID>."
+fi
 
 echo "Bye-bye."
 date
