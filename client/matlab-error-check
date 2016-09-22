@@ -13,5 +13,7 @@ export COMMAND="docker run \
   -e \"OUTPUT_SCRATCH=/home/ubuntu/render-toolbox-working\" \
   -e \"OUTPUT_BUCKET=s3://render-toolbox-test/matlab-error-check\" \
   ninjaben/rtb-support"
-./run-render-instance 2>&1 > /tmp/matlab-error-check.log &
+
+mkdir -p ~/rtb-logs
+./run-render-instance 2>&1 > ~/rtb-logs/matlab-error-check.log &
 

@@ -14,5 +14,7 @@ export COMMAND="docker run \
   -e \"OUTPUT_SCRATCH=/home/ubuntu/render-toolbox-working\" \
   -e \"OUTPUT_BUCKET=s3://render-toolbox-test/vwcc-100-recipe-check-c4-8xlarge\" \
   ninjaben/rtb-support"
-./run-render-instance 2>&1 > /tmp/vwcc-100-recipe-check-c4-8xlarge.log &
+
+mkdir -p ~/rtb-logs
+./run-render-instance 2>&1 > ~/rtb-logs/vwcc-100-recipe-check-c4-8xlarge.log &
 

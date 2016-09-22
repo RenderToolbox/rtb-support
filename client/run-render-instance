@@ -41,6 +41,7 @@ aws ec2 create-tags --resources $INSTANCE_ID --tags Key=Name,Value=$INSTANCE_NAM
 echo "Waiting for instance <$INSTANCE_ID> to start..."
 aws ec2 wait instance-status-ok --instance-ids "$INSTANCE_ID"
 echo "...OK"
+date
 
 
 # pre-accept ssh key for the instance
@@ -58,6 +59,8 @@ ssh-keyscan -H $INSTANCE_DNS_NAME >> ~/.ssh/known_hosts
 echo "Running command <$COMMAND> at host <$INSTANCE_DNS_NAME>"
 ssh -i "$KEY_FOLDER/$KEY_NAME.pem" "ubuntu@$INSTANCE_DNS_NAME" "$COMMAND"
 
+echo "Done"
+date
 
 # shut down the instance?
 if [ "yes" == $TERMINATE ];
@@ -69,7 +72,8 @@ then
   aws ec2 wait instance-terminated --instance-ids "$INSTANCE_ID"
   echo "...OK"
 else
-  echo "Leaving instance running <$INSTANCE_ID>."
+  echo "Leaving instance running <$INSTANCE_ID>.  Try:"
+  echo "  ssh -i $KEY_FOLDER/$KEY_NAME.pem ubuntu@$INSTANCE_DNS_NAME"
 fi
 
 echo "Bye-bye."
