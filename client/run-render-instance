@@ -12,7 +12,7 @@ date
 : ${INSTANCE_TYPE:="m4.large"}
 : ${IAM_PROFILE:="Name=ecsInstanceRole"}
 : ${SECURITY_GROUPS:="default" "all-ssh"}
-: ${KEY_NAME:="render-toolbox"}
+: ${KEY_NAME:="bsh-imac-workstation"}
 : ${KEY_FOLDER:="$HOME/aws"}
 : ${TERMINATE:="yes"}
 
