@@ -1,21 +1,47 @@
 #! /bin/bash
 
 CSV="$1"
+GO="$2"
 
-if [ ! -f $CSV ];
+if [[ -z $CSV || ! -f $CSV ]];
 then
   echo "csv file <$CSV> not found."
   exit 1
 fi
 
-IFS=,
-while read JOB_NUMBER LUMINANCE_LEVELS REFLECTANCE_NUMBERS REFLECTANCE_START REFLECTANCE_END BUCKET_PATH
+mkdir -p ~/rtb-logs
+
+while IFS="," read JOB_NUMBER LUMINANCE_LEVELS REFLECTANCE_NUMBERS REFLECTANCE_START REFLECTANCE_END BUCKET_PATH
 do
-  echo "$JOB_NUMBER"
-  echo "$LUMINANCE_LEVELS"
-  echo "$REFLECTANCE_NUMBERS"
-  echo "$REFLECTANCE_START"
-  echo "$REFLECTANCE_END"
-  echo "$BUCKET_PATH"
+  if [[ "$JOB_NUMBER" =~ [[:alpha:]] ]];
+  then
+    continue
+  fi
+
+  export INSTANCE_NAME="vwcc-1000-job-$JOB_NUMBER" 
+  export INSTANCE_TYPE="m4.2xlarge"
+  export COMMAND="docker run \
+    --rm \
+    -v \"/usr/local/MATLAB/R2015b\":/usr/local/MATLAB/from-host \
+    -v /home/ubuntu:/home/ubuntu \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    --net=\"host\" \
+    -e \"STARTUP=/home/ubuntu/MATLAB/startup\" \
+    -e \"TOOLBOXES={'VirtualWorldColorConstancy', 'isetbio'}\" \
+    -e \"COMMAND=RunToyVirtualWorldRecipes('luminanceLevels', $LUMINANCE_LEVELS, 'reflectanceNumbers', $REFLECTANCE_NUMBERS, 'executeWidth', 640, 'executeHeight', 480, 'analyzeWidth', 640, 'analyzeHeight', 480, 'analyzeCropImageHalfSize', 50, 'mosaicHalfSize', 50)\" \
+    -e \"OUTPUT_SCRATCH=/home/ubuntu/render-toolbox-working\" \
+    -e \"OUTPUT_BUCKET=s3://$BUCKET_PATH\" \
+    ninjaben/rtb-support"
+
+  if [[ "$GO" == "go" ]];
+  then
+    ./run-render-instance 2>&1 > ~/rtb-logs/$INSTANCE_NAME.log &
+  else
+    echo "INSTANCE_NAME $INSTANCE_NAME"
+    echo "COMMAND $COMMAND"
+    echo "WOULD RUN ./run-render-instance 2>&1 > ~/rtb-logs/$INSTANCE_NAME.log &"
+    echo
+  fi
+
 done < $CSV
 

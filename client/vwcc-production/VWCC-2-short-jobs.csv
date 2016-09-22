@@ -1,0 +1,3 @@
+job number,luminanceLevels,reflectanceNumbers,reflectance start,reflectance end,bucket path
+1,[0.2000    0.2119],1:2,1,2,render-toolbox-test/job-1
+2,[0.2000    0.2119],3:4,3,4,render-toolbox-test/job-2,
