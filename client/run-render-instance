@@ -7,11 +7,12 @@ date
 : ${INSTANCE_NAME:="test-instance"}
 : ${COMMAND:="ls -al"}
 : ${AMI_ID:="ami-ae68bace"}
+: ${AWS_USER:="ubuntu"}
 : ${DISK_GB:=100}
 : ${INSTANCE_TYPE:="m4.large"}
 : ${IAM_PROFILE:="Name=ecsInstanceRole"}
 : ${SECURITY_GROUPS:="default" "all-ssh"}
-: ${KEY_NAME:="bsh-imac-workstation"}
+: ${KEY_NAME:="render-toolbox"}
 : ${KEY_FOLDER:="$HOME/aws"}
 : ${TERMINATE:="yes"}
 
@@ -57,7 +58,7 @@ ssh-keyscan -H $INSTANCE_DNS_NAME >> ~/.ssh/known_hosts
 
 # fire off the command
 echo "Running command <$COMMAND> at host <$INSTANCE_DNS_NAME>"
-ssh -i "$KEY_FOLDER/$KEY_NAME.pem" "ubuntu@$INSTANCE_DNS_NAME" "$COMMAND"
+ssh -i "$KEY_FOLDER/$KEY_NAME.pem" "$AWS_USER@$INSTANCE_DNS_NAME" "$COMMAND"
 
 echo "Done"
 date
@@ -73,7 +74,7 @@ then
   echo "...OK"
 else
   echo "Leaving instance running <$INSTANCE_ID>.  Try:"
-  echo "  ssh -i $KEY_FOLDER/$KEY_NAME.pem ubuntu@$INSTANCE_DNS_NAME"
+  echo "  ssh -i $KEY_FOLDER/$KEY_NAME.pem $AWS_USER@$INSTANCE_DNS_NAME"
 fi
 
 echo "Bye-bye."
