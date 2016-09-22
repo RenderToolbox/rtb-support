@@ -1,0 +1,21 @@
+#! /bin/bash
+
+CSV="$1"
+
+if [ ! -f $CSV ];
+then
+  echo "csv file <$CSV> not found."
+  exit 1
+fi
+
+IFS=,
+while read JOB_NUMBER LUMINANCE_LEVELS REFLECTANCE_NUMBERS REFLECTANCE_START REFLECTANCE_END BUCKET_PATH
+do
+  echo "$JOB_NUMBER"
+  echo "$LUMINANCE_LEVELS"
+  echo "$REFLECTANCE_NUMBERS"
+  echo "$REFLECTANCE_START"
+  echo "$REFLECTANCE_END"
+  echo "$BUCKET_PATH"
+done < $CSV
+
