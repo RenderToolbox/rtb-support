@@ -18,6 +18,8 @@ do
     continue
   fi
 
+  CLEAN_BUCKET_PATH=${BUCKET_PATH//[$'\t\r\n ,']}
+
   export INSTANCE_NAME="vwcc-1000-job-$JOB_NUMBER" 
   export INSTANCE_TYPE="m4.2xlarge"
   export COMMAND="docker run \
@@ -30,12 +32,13 @@ do
     -e \"TOOLBOXES={'VirtualWorldColorConstancy', 'isetbio'}\" \
     -e \"COMMAND=RunToyVirtualWorldRecipes('luminanceLevels', $LUMINANCE_LEVELS, 'reflectanceNumbers', $REFLECTANCE_NUMBERS, 'executeWidth', 640, 'executeHeight', 480, 'analyzeWidth', 640, 'analyzeHeight', 480, 'analyzeCropImageHalfSize', 50, 'mosaicHalfSize', 50)\" \
     -e \"OUTPUT_SCRATCH=/home/ubuntu/render-toolbox-working\" \
-    -e \"OUTPUT_BUCKET=s3://$BUCKET_PATH\" \
+    -e \"OUTPUT_BUCKET=s3://$CLEAN_BUCKET_PATH\" \
     ninjaben/rtb-support"
 
   if [[ "$GO" == "go" ]];
   then
     ./run-render-instance 2>&1 > ~/rtb-logs/$INSTANCE_NAME.log &
+    sleep 1
   else
     echo "INSTANCE_NAME $INSTANCE_NAME"
     echo "COMMAND $COMMAND"
