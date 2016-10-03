@@ -1,0 +1,20 @@
+#! /bin/bash
+
+export INSTANCE_NAME="vwcc-job-36-redo" 
+export INSTANCE_TYPE="m4.2xlarge"
+export COMMAND="docker run \
+  --rm \
+  -v \"/usr/local/MATLAB/R2015b\":/usr/local/MATLAB/from-host \
+  -v /home/ubuntu:/home/ubuntu \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  --net=\"host\" \
+  -e \"STARTUP=/home/ubuntu/MATLAB/startup\" \
+  -e \"TOOLBOXES={'VirtualWorldColorConstancy', 'isetbio'}\" \
+  -e \"COMMAND=RunToyVirtualWorldRecipes('luminanceLevels', [0.2000    0.2119    0.2245    0.2379    0.2520    0.2670    0.2829    0.2998    0.3176    0.3365    0.3566    0.3778    0.4003    0.4241    0.4494    0.4761    0.5044    0.5345    0.5663    0.6000], 'reflectanceNumbers', 176:180, 'executeWidth', 640, 'executeHeight', 480, 'analyzeWidth', 640, 'analyzeHeight', 480, 'analyzeCropImageHalfSize', 50, 'mosaicHalfSize', 50)\" \
+  -e \"OUTPUT_SCRATCH=/home/ubuntu/render-toolbox-working\" \
+  -e \"OUTPUT_BUCKET=s3://render-toolbox-vwcc/vwcc-job-36\" \
+  ninjaben/rtb-support"
+
+mkdir -p ~/rtb-logs
+./run-render-instance 2>&1 > ~/rtb-logs/vwcc-job-36-redo.log &
+
