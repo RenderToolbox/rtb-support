@@ -1,5 +1,7 @@
 #! /bin/bash
 
+# automatically quit after errors
+set -e
 
 echo "Hello."
 date
@@ -10,11 +12,11 @@ date
 : ${COMMAND:="ls -al"}
 : ${AMI_ID:="ami-ae68bace"}
 : ${AWS_USER:="ubuntu"}
-: ${DISK_GB:=100}
-: ${INSTANCE_TYPE:="m4.large"}
+: ${DISK_GB:=""}
+: ${INSTANCE_TYPE:="m3.large"}
 : ${IAM_PROFILE:="Name=ecsInstanceRole"}
 : ${SECURITY_GROUPS:="default" "all-ssh"}
-: ${KEY_NAME:="bsh-imac-workstation"}
+: ${KEY_NAME:=""}
 : ${KEY_FOLDER:="$HOME/aws"}
 : ${TERMINATE:="yes"}
 
@@ -23,15 +25,19 @@ INSTANCE_DETAILS="/tmp/$INSTANCE_NAME.json"
 
 # spin up a new instances
 echo "Requesting <$INSTANCE_TYPE> for <$AMI_ID>."
-aws ec2 run-instances \
-  --image-id $AMI_ID \
-  --count 1 \
-  --block-device-mappings "[{\"DeviceName\":\"/dev/sda1\",\"Ebs\":{\"VolumeSize\":$DISK_GB,\"DeleteOnTermination\":true,\"VolumeType\":\"gp2\"}}]" \
-  --instance-type $INSTANCE_TYPE \
-  --iam-instance-profile $IAM_PROFILE \
-  --security-groups $SECURITY_GROUPS \
-  --key-name $KEY_NAME \
-  > "$INSTANCE_DETAILS"
+RUN_COMMAND="aws ec2 run-instances --image-id $AMI_ID --count 1 --instance-type $INSTANCE_TYPE --iam-instance-profile $IAM_PROFILE --security-groups $SECURITY_GROUPS"
+
+if [[ -n $KEY_NAME ]]
+then
+  RUN_COMMAND="$RUN_COMMAND --key-name $KEY_NAME"
+fi
+
+if [[ -n $DISK_GB ]]
+then
+  RUN_COMMAND="$RUN_COMMAND --block-device-mappings "[{\"DeviceName\":\"/dev/sda1\",\"Ebs\":{\"VolumeSize\":$DISK_GB,\"DeleteOnTermination\":true,\"VolumeType\":\"gp2\"}}]""
+fi
+
+"$RUN_COMMAND" > "$INSTANCE_DETAILS"
 
 INSTANCE_ID=`jq -r ".Instances[0].InstanceId" $INSTANCE_DETAILS`
 
