@@ -25,19 +25,20 @@ INSTANCE_DETAILS="/tmp/$INSTANCE_NAME.json"
 
 # spin up a new instances
 echo "Requesting <$INSTANCE_TYPE> for <$AMI_ID>."
-RUN_COMMAND="aws ec2 run-instances --image-id $AMI_ID --count 1 --instance-type $INSTANCE_TYPE --iam-instance-profile $IAM_PROFILE --security-groups $SECURITY_GROUPS"
+RUN_ARGS="--image-id $AMI_ID --count 1 --instance-type $INSTANCE_TYPE --iam-instance-profile $IAM_PROFILE --security-groups $SECURITY_GROUPS"
 
 if [[ -n $KEY_NAME ]]
 then
-  RUN_COMMAND="$RUN_COMMAND --key-name $KEY_NAME"
+  RUN_ARGS="$RUN_ARGS --key-name $KEY_NAME"
 fi
 
 if [[ -n $DISK_GB ]]
 then
-  RUN_COMMAND="$RUN_COMMAND --block-device-mappings "[{\"DeviceName\":\"/dev/sda1\",\"Ebs\":{\"VolumeSize\":$DISK_GB,\"DeleteOnTermination\":true,\"VolumeType\":\"gp2\"}}]""
+  RUN_ARGS="$RUN_ARGS --block-device-mappings "[{\"DeviceName\":\"/dev/sda1\",\"Ebs\":{\"VolumeSize\":$DISK_GB,\"DeleteOnTermination\":true,\"VolumeType\":\"gp2\"}}]""
 fi
 
-"$RUN_COMMAND" > "$INSTANCE_DETAILS"
+echo "cobra $RUN_ARGS"
+aws ec2 run-instances $RUN_ARGS > "$INSTANCE_DETAILS"
 
 INSTANCE_ID=`jq -r ".Instances[0].InstanceId" $INSTANCE_DETAILS`
 
@@ -49,6 +50,7 @@ aws ec2 create-tags --resources $INSTANCE_ID --tags Key=Name,Value=$INSTANCE_NAM
 # wait until it's ready for ssh
 echo "Waiting for instance <$INSTANCE_ID> to start..."
 aws ec2 wait instance-status-ok --instance-ids "$INSTANCE_ID"
+
 echo "...OK"
 date
 
@@ -64,14 +66,13 @@ INSTANCE_DNS_NAME=`jq -r ".Reservations[0].Instances[0].PublicDnsName" $INSTANCE
 # fire off the command with or without identity file
 if [[ -z $KEY_NAME ]]
 then
+  echo "Running command <$COMMAND> at host <$INSTANCE_DNS_NAME with no identity>"
+  ssh "$AWS_USER@$INSTANCE_DNS_NAME" "$COMMAND"
+else
   echo "Running command <$COMMAND> at host <$INSTANCE_DNS_NAME> with identity <$KEY_NAME>"
   ssh-keyscan -H $INSTANCE_DNS_NAME >> ~/.ssh/known_hosts
   ssh -i "$KEY_FOLDER/$KEY_NAME.pem" "$AWS_USER@$INSTANCE_DNS_NAME" "$COMMAND"
-else
-  echo "Running command <$COMMAND> at host <$INSTANCE_DNS_NAME with no identity>"
-  ssh "$AWS_USER@$INSTANCE_DNS_NAME" "$COMMAND"
 fi
-
 
 echo "Done"
 date
@@ -90,7 +91,6 @@ else
   echo "Leaving instance running <$INSTANCE_ID>.  Try:"
   echo "  ssh -i $KEY_FOLDER/$KEY_NAME.pem $AWS_USER@$INSTANCE_DNS_NAME"
 fi
-
 
 echo "Bye-bye."
 date
