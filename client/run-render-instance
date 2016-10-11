@@ -1,7 +1,9 @@
 #! /bin/bash
 
+
 echo "Hello."
 date
+
 
 # given or default environment
 : ${INSTANCE_NAME:="test-instance"}
@@ -16,8 +18,8 @@ date
 : ${KEY_FOLDER:="$HOME/aws"}
 : ${TERMINATE:="yes"}
 
-
 INSTANCE_DETAILS="/tmp/$INSTANCE_NAME.json"
+
 
 # spin up a new instances
 echo "Requesting <$INSTANCE_TYPE> for <$AMI_ID>."
@@ -45,22 +47,29 @@ echo "...OK"
 date
 
 
-# pre-accept ssh key for the instance
+# update instance details
 aws ec2 describe-instances \
   --instance-id $INSTANCE_ID \
   > "$INSTANCE_DETAILS"
 
 INSTANCE_DNS_NAME=`jq -r ".Reservations[0].Instances[0].PublicDnsName" $INSTANCE_DETAILS`
 
-ssh-keyscan -H $INSTANCE_DNS_NAME >> ~/.ssh/known_hosts
 
+# fire off the command with or without identity file
+if [[ -z $KEY_NAME ]]
+then
+  echo "Running command <$COMMAND> at host <$INSTANCE_DNS_NAME> with identity <$KEY_NAME>"
+  ssh-keyscan -H $INSTANCE_DNS_NAME >> ~/.ssh/known_hosts
+  ssh -i "$KEY_FOLDER/$KEY_NAME.pem" "$AWS_USER@$INSTANCE_DNS_NAME" "$COMMAND"
+else
+  echo "Running command <$COMMAND> at host <$INSTANCE_DNS_NAME with no identity>"
+  ssh "$AWS_USER@$INSTANCE_DNS_NAME" "$COMMAND"
+fi
 
-# fire off the command
-echo "Running command <$COMMAND> at host <$INSTANCE_DNS_NAME>"
-ssh -i "$KEY_FOLDER/$KEY_NAME.pem" "$AWS_USER@$INSTANCE_DNS_NAME" "$COMMAND"
 
 echo "Done"
 date
+
 
 # shut down the instance?
 if [ "yes" == $TERMINATE ];
@@ -75,6 +84,7 @@ else
   echo "Leaving instance running <$INSTANCE_ID>.  Try:"
   echo "  ssh -i $KEY_FOLDER/$KEY_NAME.pem $AWS_USER@$INSTANCE_DNS_NAME"
 fi
+
 
 echo "Bye-bye."
 date
