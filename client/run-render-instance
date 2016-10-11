@@ -37,7 +37,6 @@ then
   RUN_ARGS="$RUN_ARGS --block-device-mappings "[{\"DeviceName\":\"/dev/sda1\",\"Ebs\":{\"VolumeSize\":$DISK_GB,\"DeleteOnTermination\":true,\"VolumeType\":\"gp2\"}}]""
 fi
 
-echo "cobra $RUN_ARGS"
 aws ec2 run-instances $RUN_ARGS > "$INSTANCE_DETAILS"
 
 INSTANCE_ID=`jq -r ".Instances[0].InstanceId" $INSTANCE_DETAILS`
