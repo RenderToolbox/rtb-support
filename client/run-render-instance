@@ -62,6 +62,10 @@ aws ec2 describe-instances \
 INSTANCE_DNS_NAME=`jq -r ".Reservations[0].Instances[0].PublicDnsName" $INSTANCE_DETAILS`
 
 
+# pre-accept ssh key for instance
+ssh-keyscan -H $INSTANCE_DNS_NAME >> ~/.ssh/known_hosts
+
+
 # fire off the command with or without identity file
 if [[ -z $KEY_NAME ]]
 then
@@ -69,7 +73,6 @@ then
   ssh "$AWS_USER@$INSTANCE_DNS_NAME" "$COMMAND"
 else
   echo "Running command <$COMMAND> at host <$INSTANCE_DNS_NAME> with identity <$KEY_NAME>"
-  ssh-keyscan -H $INSTANCE_DNS_NAME >> ~/.ssh/known_hosts
   ssh -i "$KEY_FOLDER/$KEY_NAME.pem" "$AWS_USER@$INSTANCE_DNS_NAME" "$COMMAND"
 fi
 
