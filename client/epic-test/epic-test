@@ -12,7 +12,7 @@ export COMMAND="docker run \
   --net=\"host\" \
   -e \"STARTUP=/home/ubuntu/MATLAB/startup\" \
   -e \"TOOLBOXES='RenderToolbox4'\" \
-  -e \"COMMAND=rtbTestAllExampleScenes()\" \
+  -e \"COMMAND=rtbTestAllExampleScenes('outputRoot', '/home/ubuntu/render-toolbox-working')\" \
   -e \"OUTPUT_SCRATCH=/home/ubuntu/render-toolbox-working\" \
   -e \"OUTPUT_BUCKET=s3://render-toolbox-reference/all-example-scenes/$NOW_DATE\" \
   ninjaben/rtb-support"
