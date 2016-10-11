@@ -1,0 +1,22 @@
+#! /bin/bash
+
+NOW_DATE=`date +%Y-%m-%d-%H-%M-%S`
+
+export INSTANCE_NAME="rtb-epic-test-$NOW_DATE"
+export INSTANCE_TYPE="m3.large"
+export COMMAND="docker run \
+  --rm \
+  -v \"/usr/local/MATLAB/R2015b\":/usr/local/MATLAB/from-host \
+  -v /home/ubuntu:/home/ubuntu \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  --net=\"host\" \
+  -e \"STARTUP=/home/ubuntu/MATLAB/startup\" \
+  -e \"TOOLBOXES='RenderToolbox4'\" \
+  -e \"COMMAND=rtbTestAllExampleScenes()\" \
+  -e \"OUTPUT_SCRATCH=/home/ubuntu/render-toolbox-working\" \
+  -e \"OUTPUT_BUCKET=s3://render-toolbox-reference/all-example-scenes/$NOW_DATE\" \
+  ninjaben/rtb-support"
+
+mkdir -p ~/rtb-logs
+./run-render-instance 2>&1 > ~/rtb-logs/$INSTANCE_NAME.log &
+
