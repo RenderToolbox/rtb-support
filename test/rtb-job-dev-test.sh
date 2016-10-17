@@ -57,6 +57,10 @@ docker run \
   -v $HOST_MATLAB:/usr/local/MATLAB/from-host \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v $HOST_VOLUME:$HOST_VOLUME \
+  --cap-add SYS_ADMIN \
+  --cap-add MKNOD \
+  --device=/dev/fuse \
+  --security-opt apparmor:unconfined \
   --net="host" \
   -e "AWS_CONFIG_FILE=$HOST_AWS_CONFIG" \
   -e "MOUNT_SCRATCH=/test/input-scratch" \
