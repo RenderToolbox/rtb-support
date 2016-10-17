@@ -12,6 +12,10 @@ export COMMAND="docker run \
   -v /home/ubuntu:/home/ubuntu \
   -v /var/run/docker.sock:/var/run/docker.sock \
   --net=\"host\" \
+  --cap-add SYS_ADMIN \
+  --cap-add MKNOD \
+  --device=/dev/fuse \
+  --security-opt apparmor:unconfined \
   -e \"STARTUP=/home/ubuntu/MATLAB/startup\" \
   -e \"TOOLBOXES='RenderToolbox4'\" \
   -e \"COMMAND=rtbCompareAllExampleScenes('/home/ubuntu/render-toolbox-reference/$PATH_A', '/home/ubuntu/render-toolbox-reference/$PATH_B', 'visualize', 2, 'figureFolder', '/home/ubuntu/render-toolbox-working')\" \
