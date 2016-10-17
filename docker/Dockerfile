@@ -54,6 +54,14 @@ WORKDIR /assimp/assimp
 RUN git checkout v3.3.1
 RUN cmake CMakeLists.txt -G 'Unix Makefiles' && make && make install && ldconfig
 
+# yas3fs
+RUN apt-get install -y \
+    fuse \
+    python-pip
+RUN pip install yas3fs
+RUN sed -i'' 's/^# *user_allow_other/user_allow_other/' /etc/fuse.conf
+RUN chmod a+r /etc/fuse.conf
+
 # awscli
 RUN apt-get install -y python-pip
 RUN pip install awscli
