@@ -50,4 +50,20 @@ docker run \
   -e "OUTPUT_BUCKET=$OUTPUT_BUCKET" \
   -e "COMMAND=system('cat /test/input-scratch/test-input.txt && echo $RANDOM | tee /test/output-scratch/test-output.txt')" \
   ninjaben/rtb-support
+  
+  # make sure we can mount an s3 bucket
+docker run \
+  --rm \
+  -v $HOST_MATLAB:/usr/local/MATLAB/from-host \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v $HOST_VOLUME:$HOST_VOLUME \
+  --net="host" \
+  -e "AWS_CONFIG_FILE=$HOST_AWS_CONFIG" \
+  -e "MOUNT_SCRATCH=/test/input-scratch" \
+  -e "MOUNT_BUCKET=$INPUT_BUCKET" \
+  -e "OUTPUT_SCRATCH=/test/output-scratch" \
+  -e "OUTPUT_BUCKET=$OUTPUT_BUCKET" \
+  -e "COMMAND=system('cat /test/input-scratch/test-input.txt && echo $RANDOM | tee /test/output-scratch/test-output.txt')" \
+  ninjaben/rtb-support
+
 
