@@ -55,7 +55,7 @@ function copy_data ()
   if [ -n "$SOURCE" ] && [ -n "$DESTINATION" ];
   then
     echo "Copy <$SOURCE> to <$DESTINATION>"
-    aws s3 cp "$SOURCE" "$DESTINATION" "$FLAGS"
+    aws s3 cp "$SOURCE" "$DESTINATION" $FLAGS
   fi
 }
 
@@ -70,7 +70,7 @@ function mount_bucket ()
   if [ -n "$BUCKET" ] && [ -n "$SCRATCH" ];
   then
     echo "Mount bucket <$BUCKET> at <$SCRATCH>"
-    yas3fs "$BUCKET" "$SCRATCH" "$FLAGS"
+    yas3fs "$BUCKET" "$SCRATCH" $FLAGS
   fi
 }
 
