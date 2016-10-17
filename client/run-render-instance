@@ -10,7 +10,7 @@ date
 # given or default environment
 : ${INSTANCE_NAME:="test-instance"}
 : ${COMMAND:="ls -al"}
-: ${AMI_ID:="ami-ae68bace"}
+: ${AMI_ID:="ami-a2cb6ec2"}
 : ${AWS_USER:="ubuntu"}
 : ${DISK_GB:=""}
 : ${INSTANCE_TYPE:="m3.large"}
