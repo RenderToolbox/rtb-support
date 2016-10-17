@@ -97,7 +97,7 @@ mkdir -p "$MOUNT_SCRATCH"
 
 
 # mount the bucket
-mount_bucket "$MOUNT_SCRATCH" "$MOUNT_SCRATCH" "$MOUNT_FLAGS"
+mount_bucket "$MOUNT_BUCKET" "$MOUNT_SCRATCH" "$MOUNT_FLAGS"
 
 
 # read data from input bucket
@@ -119,4 +119,4 @@ copy_data "$OUTPUT_SCRATCH" "$OUTPUT_BUCKET" "$OUTPUT_FLAGS"
 
 
 # unmount scratch bucket
-unmount_bucket "$MOUNT_SCRATCH" "$MOUNT_SCRATCH"
+unmount_bucket "$MOUNT_BUCKET" "$MOUNT_SCRATCH"
