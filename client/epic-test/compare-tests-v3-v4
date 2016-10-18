@@ -2,7 +2,7 @@
 
 COMPARE_NAME="v3-v4"
 PATH_A="all-example-scenes/2016-10-14-18-28-35"
-PATH_B="all-example-scenes/version-3"
+PATH_B="version-3"
 
 export INSTANCE_NAME="rtb-compare-tests-$COMPARE_NAME"
 export INSTANCE_TYPE="m3.large"
