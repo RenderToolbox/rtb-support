@@ -1,6 +1,6 @@
 #! /bin/bash
 
-COMPARE_NAME="repeatability-1"
+COMPARE_NAME="repeatability"
 PATH_A="all-example-scenes/2016-10-14-18-28-35"
 PATH_B="all-example-scenes/2016-10-14-18-28-38"
 
