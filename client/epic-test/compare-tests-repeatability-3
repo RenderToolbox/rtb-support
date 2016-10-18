@@ -1,0 +1,29 @@
+#! /bin/bash
+
+COMPARE_NAME="repeatability-3"
+PATH_A="all-example-scenes/2016-10-13-22-01-44"
+PATH_B="all-example-scenes/2016-10-14-18-28-38"
+
+export INSTANCE_NAME="rtb-compare-tests-$COMPARE_NAME"
+export INSTANCE_TYPE="m3.large"
+export COMMAND="docker run \
+  --rm \
+  -v \"/usr/local/MATLAB/R2015b\":/usr/local/MATLAB/from-host \
+  -v /home/ubuntu:/home/ubuntu \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  --net=\"host\" \
+  --cap-add SYS_ADMIN \
+  --cap-add MKNOD \
+  --device=/dev/fuse \
+  --security-opt apparmor:unconfined \
+  -e \"STARTUP=/home/ubuntu/MATLAB/startup\" \
+  -e \"TOOLBOXES='RenderToolbox4'\" \
+  -e \"COMMAND=rtbCompareAllExampleScenes('/home/ubuntu/render-toolbox-reference/$PATH_A', '/home/ubuntu/render-toolbox-reference/$PATH_B', 'visualize', 2, 'figureFolder', '/home/ubuntu/render-toolbox-working')\" \
+  -e \"MOUNT_SCRATCH=/home/ubuntu/render-toolbox-reference\" \
+  -e \"MOUNT_BUCKET=s3://render-toolbox-reference\" \
+  -e \"OUTPUT_SCRATCH=/home/ubuntu/render-toolbox-working\" \
+  -e \"OUTPUT_BUCKET=s3://render-toolbox-reference/comparisons/$COMPARE_NAME\" \
+  ninjaben/rtb-support"
+
+mkdir -p ~/rtb-logs
+./run-render-instance 2>&1 > ~/rtb-logs/$INSTANCE_NAME.log &
