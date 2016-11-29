@@ -1,0 +1,8 @@
+job name,bucket path,error location,luminanceLevel,reflectanceNumber,error message
+6,render-toolbox-vwcc2/job-omega,Originals,0.2,58,Caught a critical exception: main [X11Session] Cannot open the display
+9,render-toolbox-vwcc2/job-omega,Rendered,0.3778,85,Caught a critical exception: main [X11Session] Cannot open the display
+12,render-toolbox-vwcc2/job-omega,Originals,0.2444,120,Caught a critical exception: main [X11Session] Cannot open the display
+16,render-toolbox-vwcc2/job-omega,Originals,0.2444,158,Caught a critical exception: main [X11Session] Cannot open the display
+26,render-toolbox-vwcc2/job-omega,Originals,0.5111,260,Error using cd Cannot CD to /home/ubuntu/render-toolbox-working/VirtualWorldColorConstancy/ToyVirtualWorld/Working/luminance-0_5556-reflectance-255-BigBall-Library/scenes (Name is nonexistent or not a directory).
+30,render-toolbox-vwcc2/job-omega,Rendered,0.4667,293,Caught a critical exception: main [X11Session] Cannot open the display
+30,render-toolbox-vwcc2/job-omega,Originals,0.2444,298,Caught a critical exception: main [X11Session] Cannot open the display
